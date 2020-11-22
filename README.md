@@ -20,3 +20,50 @@ RPM = 60 * F_CPU / prescaler / counter
 The calculated RPM value is displayed on an I²C OLED display. The I²C protocol implementation is based on a crude bitbanging method. It was specifically designed for the limited resources of ATtiny10 and ATtiny13, but should work with some other AVRs as well. The functions for the OLED are adapted to the SSD1306 128x32 OLED module, but they can easily be modified to be used for other modules. In order to save resources, only the basic functionalities which are needed for this application are implemented.
 
 For a detailed information on the working principle of the I²C OLED implementation visit https://github.com/wagiminator/attiny13-tinyoleddemo
+
+```c
+// global variables
+volatile uint8_t  counter_enable    = 1;  // enable update of counter result
+volatile uint8_t  counter_highbyte  = 0;  // high byte of 16-bit counter
+volatile uint16_t counter_result    = 0;  // counter result (timer counts per revolution)
+
+// main function
+int main(void) {
+  uint16_t counter_value;                 // timer counts per revolution
+  uint16_t rpm;                           // revolutions per minute
+  PRR    = (1<<PRADC);                    // shut down ADC to save power
+  DIDR0  = (1<<AIN1D) | (1<<AIN0D);       // disable digital input buffer on AC pins
+  ACSR   = (1<<ACIE) | (1<<ACIS1);        // enable analog comparator interrupt on falling edge
+  TIMSK0 = (1<<TOIE0);                    // enable timer overflow interrupt
+  sei();                                  // enable all interrupts
+  OLED_init();                            // initialize the OLED
+  
+  // main loop
+  while(1) {                              // loop until forever                         
+    counter_enable = 0;                   // lock counter result
+    counter_value = counter_result;       // get counter result
+    counter_enable = 1;                   // unlock counter result
+    if (counter_value > 17) {             // if counter value is valid:
+      rpm = (uint32_t)1125000 / counter_value; // calculate RPM value      
+      OLED_printW(rpm);                   // print RPM value on the OLED
+    } else OLED_printB(slow);             // else print "SLOW" on the OLED
+  }
+}
+
+// analog comparator interrupt service routine
+ISR(ANA_COMP_vect) {
+  if(counter_enable) counter_result = (uint16_t)(counter_highbyte << 8) | TCNT0; // save result if enabled
+  TCNT0 = 0;                              // reset counter
+  counter_highbyte = 0;                   // reset highbyte
+  TCCR0B  = (1<<CS01) | (1<<CS00);        // start timer with prescaler 64 (in case it was stopped)
+}
+
+// timer overflow interrupt service routine
+ISR(TIM0_OVF_vect) {
+  counter_highbyte++;                     // increase highbyte (virtual 16-bit counter)
+  if(!counter_highbyte) {                 // if 16-bit counter overflows
+    TCCR0B = 0;                           // stop the timer
+    if(counter_enable) counter_result = 0;// result is invalid
+  }
+}
+```
