@@ -67,3 +67,9 @@ ISR(TIM0_OVF_vect) {
   }
 }
 ```
+
+# References, Links and Notes
+1. Great Scott's Tachometer: https://youtu.be/6QZMt4yyylU
+2. ATtiny13 I²C OLED Tutorial: https://github.com/wagiminator/attiny13-tinyoleddemo
+3. SSD1306 Datasheet: https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
+4. ATtiny13A Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/doc8126.pdf
