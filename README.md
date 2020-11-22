@@ -10,12 +10,12 @@ Since the ATtiny13 does almost all of the tasks, the wiring is pretty simple:
 
 ![wiring.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_Wiring.png)
 
-# Softare
+# Software
 An IR photo transistor is connected to the positive input of ATtiny's internal analog comparator, a variable resistor for calibration is connected to the negative input. An interrupt is triggered on every falling edge of the comparator output which saves the current value of timer0 and restarts the timer. The 8-bit timer is expanded to a 16-bit one by using the timer overflow interrupt. The saved timer value contains the timer counts per revolution. The RPM is calculated by utilizing the following equation:
 ```
 RPM = 60 * F_CPU / prescaler / counter
-     = 60 * 1200000 / 64 / counter
-     = 1125000 / counter
+    = 60 * 1200000 / 64 / counter
+    = 1125000 / counter
 ```
 The calculated RPM value is displayed on an I²C OLED display. The I²C protocol implementation is based on a crude bitbanging method. It was specifically designed for the limited resources of ATtiny10 and ATtiny13, but should work with some other AVRs as well. The functions for the OLED are adapted to the SSD1306 128x32 OLED module, but they can easily be modified to be used for other modules. In order to save resources, only the basic functionalities which are needed for this application are implemented.
 
