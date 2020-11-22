@@ -2,6 +2,8 @@
 
 Recently Great Scott built his DIY version of a tachometer which I thought was very cool (https://youtu.be/6QZMt4yyylU). But using an ATmega for this task, I found a bit overpowered. So I tried to force all tasks (measurement, calculation, I²C protocol and OLED display) into the huge 1KByte memory of an ATtiny13.
 
+- Project Video: https://youtu.be/Iz7LjheLYKo
+
 ![pic1.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_pic1.jpg)
 ![pic2.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_pic2.jpg)
 
@@ -9,6 +11,8 @@ Recently Great Scott built his DIY version of a tachometer which I thought was v
 Since the ATtiny13 does almost all of the tasks, the wiring is pretty simple:
 
 ![wiring.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_Wiring.png)
+
+The IR LED emits light, which is reflected by the rotating object and detected by the IR phototransistor. The phototransistor changes its conductivity depending on the strength of the reflected light. If the rotating object has exactly one white stripe on an otherwise black surface, then the phototransistor changes its electrical resistance twice per revolution: it rises once above and falls once below a certain threshold, which is defined by the variable resistor.
 
 # Software
 An IR photo transistor is connected to the positive input of ATtiny's internal analog comparator, a variable resistor for calibration is connected to the negative input. An interrupt is triggered on every falling edge of the comparator output which saves the current value of timer0 and restarts the timer. The 8-bit timer is expanded to a 16-bit one by using the timer overflow interrupt. The saved timer value contains the timer counts per revolution. The RPM is calculated by utilizing the following equation:
