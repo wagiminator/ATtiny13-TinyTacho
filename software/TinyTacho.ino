@@ -1,7 +1,7 @@
 // tinyTacho - RPM-Meter using ATtiny13A and I²C OLED
 //
 // This code implements a simple tachometer (RPM counter). An IR photo
-// transistor is connected to the positive input of ATtiny's internal
+// diode is connected to the positive input of ATtiny's internal
 // analog comparator, a variable resistor for calibration is connected to
 // the negative input. An interrupt is triggered on every falling edge of
 // the comparator output which saves the current value of timer/counter 0
@@ -37,7 +37,7 @@
 //          --- A0 (D5) PB5  1|°   |8  Vcc
 // SCL OLED --- A3 (D3) PB3  2|    |7  PB2 (D2) A1 ---
 // SDA OLED --- A2 (D4) PB4  3|    |6  PB1 (D1) AC1 -- Calib Poti
-//                      GND  4|    |5  PB0 (D0) AC0 -- IR PT
+//                      GND  4|    |5  PB0 (D0) AC0 -- IR Photo Diode
 //                            +----+  
 //
 // Controller: ATtiny13

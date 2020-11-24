@@ -12,10 +12,10 @@ Since the ATtiny13 does almost all of the tasks, the wiring is pretty simple:
 
 ![wiring.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_Wiring.png)
 
-The IR LED emits light, which is reflected by the rotating object and detected by the IR phototransistor. The phototransistor changes its conductivity depending on the strength of the reflected light. If the rotating object has exactly one white stripe on an otherwise black surface, then the phototransistor changes its electrical resistance twice per revolution: it rises once above and falls once below a certain threshold, which is defined by the variable resistor.
+The IR LED emits light, which is reflected by the rotating object and detected by the IR photo diode. The photo diode changes its conductivity depending on the strength of the reflected light. If the rotating object has exactly one white stripe on an otherwise black surface, then the photo diode changes its electrical resistance twice per revolution and the voltage between the diode and the 10k resistor rises once above and falls once below a certain threshold, which is defined by the variable resistor.
 
 # Software
-The IR photo transistor is connected to the positive input of ATtiny's internal analog comparator, the variable resistor for calibration is connected to the negative input. An interrupt is triggered on every falling edge of the comparator output which saves the current value of timer0 and restarts the timer. The 8-bit timer is expanded to a 16-bit one by using the timer overflow interrupt. The saved timer value contains the timer counts per revolution. The RPM is calculated by utilizing the following equation:
+The IR photo diode is connected to the positive input of ATtiny's internal analog comparator, the variable resistor for calibration is connected to the negative input. An interrupt is triggered on every falling edge of the comparator output which saves the current value of timer0 and restarts the timer. The 8-bit timer is expanded to a 16-bit one by using the timer overflow interrupt. The saved timer value contains the timer counts per revolution. The RPM is calculated by utilizing the following equation:
 ```
 RPM = 60 * F_CPU / prescaler / counter
     = 60 * 1200000 / 64 / counter
