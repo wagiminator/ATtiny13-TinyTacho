@@ -1,8 +1,9 @@
 # TinyTacho - Simple RPM-Meter based on ATtiny13A
 
-Recently Great Scott built his DIY version of a tachometer which I thought was very cool (https://youtu.be/6QZMt4yyylU). But using an ATmega for this task, I found a bit overpowered. So I tried to force all tasks (measurement, calculation, I²C protocol and OLED display) into the huge 1KByte memory of an ATtiny13.
+Recently Great Scott built his [DIY version of a tachometer](https://youtu.be/6QZMt4yyylU) which I thought was very cool. But using an ATmega for this job, I found a bit overpowered. So I tried to force all tasks (measurement, calculation, I²C protocol and OLED display) into the huge 1KByte memory of an ATtiny13A.
 
 - Project Video: https://youtu.be/Iz7LjheLYKo
+- Project Files (EasyEDA): https://easyeda.com/wagiminator/attiny13-tinytacho
 
 ![pic1.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_pic1.jpg)
 ![pic2.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_pic2.jpg)
