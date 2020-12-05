@@ -89,7 +89,7 @@ The measuring resolution depends on the resolution of the timer/counter, which i
 
 ![resolution.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_resolution.png)
 
-The resolution in the diagram shown means the minimum distance between two measured values (the higher the value, the worse the resolution). To improve the resolution, the clock frequency of the timer/counter must be increased (see above). In order not to reduce the measuring range as a result, the counter and result variables must be extended to 32 bits.
+The resolution in the diagram shown means the **minimum distance between two measured values** (the higher the value, the worse the resolution). To improve the resolution, the clock frequency of the timer/counter must be increased (see above). In order not to reduce the measuring range as a result, the counter and result variables must be extended to 32 bits.
 
 ### Measuring Accuracy
 The measurement accuracy essentially depends on the accuracy of ATtiny's internal RC oscillator. According to the data sheet, this is **+/-10%** with the factory calibration. This can be improved to **+/-2%** by manual calibration. For even better values, a precise external clock signal would have to be used, but this exceeds the purpose of this project. With high RPM values, the latency of the interrupt service routine must also be considered.
