@@ -80,6 +80,7 @@ The measuring range depends on:
 - the width of the timer/counter (here 16 bit)
 - the width of the result variable (here 16 bit)
 - the clock frequency of the timer/counter (CPU clock / prescaler, here: 1.2MHz / 64 = 18.75 kHz)
+
 This results in a measuring range from **17 to 62500 RPM**.
 To increase the measuring range, on the one hand the clock frequency of the timer must be increased by decreasing the prescaler and/or increasing the CPU clock frequency, on the other hand the counter and result variables must be expanded to 32 bits. Furthermore, the OLED_printW routine must be adapted so that 32 bit values can be displayed on the OLED.
 
@@ -91,7 +92,7 @@ The measuring resolution depends on the resolution of the timer/counter, which i
 To increase the resolution, the clock frequency of the timer/counter must be increased (see above). In order not to reduce the measuring range as a result, the counter and result variables must be extended to 32 bits.
 
 ### Measuring Accuracy
-The measurement accuracy essentially depends on the accuracy of the ATtiny's internal RC oscillator. According to the data sheet, this is +/-10% with the factory calibration. This can be improved to +/-2% by manual calibration. For even better values, a precise external clock signal would have to be used, but this exceeds the purpose of this project. With high RPM values, the latency of the interrupt service routine must also be considered.
+The measurement accuracy essentially depends on the accuracy of ATtiny's internal RC oscillator. According to the data sheet, this is +/-10% with the factory calibration. This can be improved to +/-2% by manual calibration. For even better values, a precise external clock signal would have to be used, but this exceeds the purpose of this project. With high RPM values, the latency of the interrupt service routine must also be considered.
 
 ## Practical Review
 ### Plausibility Check
