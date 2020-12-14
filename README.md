@@ -88,7 +88,7 @@ If using the Arduino IDE:
 - Connect your programmer to your PC and to the ATtiny.
 - Go to **Tools -> Programmer** and select your ISP programmer (e.g. [USBasp](https://aliexpress.com/wholesale?SearchText=usbasp)).
 - Go to **Tools -> Burn Bootloader** to burn the fuses.
-- Open the ContinuityTester sketch and click **Upload**.
+- Open TinyTacho.ino and click **Upload**.
 
 If using the precompiled hex-file (this may be a little different with Windows):
 - Make sure you have installed [avrdude](https://learn.adafruit.com/usbtinyisp/avrdude).
