@@ -75,6 +75,39 @@ ISR(TIM0_OVF_vect) {
 }
 ```
 
+# Compiling and Uploading
+Since there is no ICSP header on the board, you have to program the ATtiny either before soldering using an [SOP adapter](https://aliexpress.com/wholesale?SearchText=sop-8+150mil+adapter), or after soldering using an [EEPROM clip](https://aliexpress.com/wholesale?SearchText=sop8+eeprom+programming+clip). The [AVR Programmer Adapter](https://github.com/wagiminator/AVR-Programmer/tree/master/AVR_Programmer_Adapter) can help with this.
+
+If using the Arduino IDE:
+- Make sure you have installed [MicroCore](https://github.com/MCUdude/MicroCore).
+- Go to **Tools -> Board -> MicroCore** and select **ATtiny13**.
+- Go to **Tools** and choose the following board options:
+  - **Clock:**  1.2 MHz internal osc.
+  - **BOD:**    BOD 2.7V
+  - **Timing:** Micros disabled
+- Connect your programmer to your PC and to the ATtiny.
+- Go to **Tools -> Programmer** and select your ISP programmer (e.g. [USBasp](https://aliexpress.com/wholesale?SearchText=usbasp)).
+- Go to **Tools -> Burn Bootloader** to burn the fuses.
+- Open the ContinuityTester sketch and click **Upload**.
+
+If using the precompiled hex-file (this may be a little different with Windows):
+- Make sure you have installed [avrdude](https://learn.adafruit.com/usbtinyisp/avrdude).
+- Connect your programmer to your PC and to the ATtiny.
+- Open a terminal.
+- Navigate to the folder with the hex-file.
+- Execute the following command (if necessary replace "usbasp" with the programmer you use):
+  ```
+  avrdude -c usbasp -p t13 -U lfuse:w:0x2a:m -U hfuse:w:0xfb:m -U flash:w:TinyTacho.hex
+  ```
+
+If using the makefile (Linux/Mac):
+- Make sure you have installed [avr-gcc toolchain and avrdude](http://maxembedded.com/2015/06/setting-up-avr-gcc-toolchain-on-linux-and-mac-os-x/).
+- Connect your programmer to your PC and to the ATtiny.
+- Open the makefile and change the programmer if you are not using usbasp.
+- Open a terminal.
+- Navigate to the folder with the makefile and main.c.
+- Run "make install" to compile, burn the fuses and upload the firmware.
+
 # Performance
 ## Theoretical Considerations
 ### Measuring Range
@@ -101,7 +134,7 @@ The measurement accuracy essentially depends on the accuracy of ATtiny's interna
 A simple plausibility check can be carried out with the video method at lower speeds. More details can be found in Great Scott's video. In addition, the measured values can be compared with the manufacturer's specifications for the motor on which the RPM was measured. The TinyTacho passed both tests.
 
 ### Oscilloscope
-The voltage behavior at the cathode of the photodiode can be measured with an oscilloscope. First of all, it can be assessed here whether there is a uniform, clean and glitch-free wave, and thus whether a reasonable detection of the white stripe passing by is possible at all. The frequency of the wave measured on the oscilloscope then automatically indicates the number of revolutions per second. If you multiply this value by 60 you get the RPM and can compare this with the value displayed on the OLED. In all measurements, this value was within the theoretically predicted accuracy.
+The voltage behavior at the cathode of the photodiode can be measured with an oscilloscope. First of all, it can be assessed here whether there is a uniform, clean and glitch-free wave, and thus whether a reasonable detection of the white stripe passing by is possible at all. The frequency of the wave measured on the oscilloscope then automatically indicates the number of revolutions per second. If you multiply this value by 60 you get the RPM and can compare this with the value displayed on the OLED. In all measurements, this value was within the theoretically predicted accuracy (the oscillator of the ATtiny was not manually calibrated).
 
 ![scope1.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_scope1.png)
 ![scope2.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_scope2.png)
