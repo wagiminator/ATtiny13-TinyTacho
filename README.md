@@ -143,7 +143,12 @@ The voltage behavior at the cathode of the photodiode can be measured with an os
 ![setup.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_setup.png)
 
 ### Comparison with Commercial Device
-The comparison with the measured values of the cheap commercial tachometer [DT-2234C+](https://aliexpress.com/wholesale?SearchText=dt-2234C) showed the same results as with the oscilloscope. The bottom line is that the TinyTacho delivers usable measured values, especially with a calibrated oscillator.
+The comparison with the measured values of the cheap commercial tachometer [DT-2234C+](https://aliexpress.com/wholesale?SearchText=dt-2234C) showed the same results as with the oscilloscope.
+
+![commercial.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_commercial.jpg)
+
+## Bottom Line
+Even if TinyTacho was intended more as an educational and fun project, it delivers plausible readings, especially with a calibrated oscillator. In contrast to the commercial products, it is much smaller and significantly cheaper. If you can do without very accurate measured values with high resolution, then the TinyTacho is a useful measuring instrument.
 
 # References, Links and Notes
 1. Great Scott's Tachometer: https://youtu.be/6QZMt4yyylU
