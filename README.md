@@ -2,7 +2,7 @@
 
 Recently Great Scott built his [DIY version of a tachometer](https://youtu.be/6QZMt4yyylU) which I thought was very cool. But using an ATmega for this job, I found a bit overpowered. So I tried to force all tasks (measurement, calculation, I²C protocol and OLED display) into the huge 1KByte memory of an ATtiny13A.
 
-- Project Video: https://youtu.be/Iz7LjheLYKo
+- Project Video (YouTube): https://youtu.be/Iz7LjheLYKo
 - Project Files (EasyEDA): https://easyeda.com/wagiminator/attiny13-tinytacho
 
 ![pic1.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_pic1.jpg)
@@ -151,7 +151,7 @@ The comparison with the measured values of the cheap commercial tachometer [DT-2
 Even if TinyTacho was intended more as an educational and fun project, it delivers plausible readings, especially with a calibrated oscillator. In contrast to the commercial products, it is much smaller and significantly cheaper. If you can do without very accurate measured values with high resolution, then the TinyTacho is a useful measuring instrument.
 
 # References, Links and Notes
-1. Great Scott's Tachometer: https://youtu.be/6QZMt4yyylU
-2. ATtiny13 I²C OLED Tutorial: https://github.com/wagiminator/attiny13-tinyoleddemo
-3. SSD1306 Datasheet: https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
-4. ATtiny13A Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/doc8126.pdf
+1. [Great Scott's Tachometer](https://youtu.be/6QZMt4yyylU)
+2. [ATtiny13 I²C OLED Tutorial](https://github.com/wagiminator/attiny13-tinyoleddemo)
+3. [SSD1306 Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
+4. [ATtiny13A Datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/doc8126.pdf)
