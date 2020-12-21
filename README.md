@@ -6,7 +6,6 @@ Recently Great Scott built his [DIY version of a tachometer](https://youtu.be/6Q
 - Project Files (EasyEDA): https://easyeda.com/wagiminator/attiny13-tinytacho
 
 ![pic1.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_pic1.jpg)
-![pic2.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_pic2.jpg)
 
 # Hardware
 Since the ATtiny13 does almost all of the tasks, the wiring is pretty simple:
@@ -14,6 +13,8 @@ Since the ATtiny13 does almost all of the tasks, the wiring is pretty simple:
 ![wiring.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_Wiring.png)
 
 The IR LED emits light, which is reflected by the rotating object and detected by the IR photo diode. The photo diode changes its conductivity depending on the strength of the reflected light. If the rotating object has exactly one white stripe on an otherwise black surface, then the photo diode changes its electrical resistance twice per revolution and the voltage between the diode and the 10k resistor rises once above and falls once below a certain threshold, which is defined by the variable resistor.
+
+![pic2.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_pic2.jpg)
 
 If you want to use a coin cell to power the device, please remember that only the rechargeable LIR1220 Li-Ion batteries work. The "normal" CR1220s don't deliver enough power.
 
