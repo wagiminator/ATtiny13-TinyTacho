@@ -5,13 +5,13 @@ Recently Great Scott built his [DIY version of a tachometer](https://youtu.be/6Q
 - Project Video (YouTube): https://youtu.be/Iz7LjheLYKo
 - Project Files (EasyEDA): https://easyeda.com/wagiminator/attiny13-tinytacho
 
-![pic1.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_pic1.jpg)
-![pic2.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_pic2.jpg)
+![pic1.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_pic1.jpg)
+![pic2.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_pic2.jpg)
 
 # Hardware
 Since the ATtiny13 does almost all of the tasks, the wiring is pretty simple:
 
-![wiring.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_Wiring.png)
+![wiring.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_Wiring.png)
 
 The IR LED emits light, which is reflected by the rotating object and detected by the IR photo diode. The photo diode changes its conductivity depending on the strength of the reflected light. If the rotating object has exactly one white stripe on an otherwise black surface, then the photo diode changes its electrical resistance twice per revolution and the voltage between the diode and the 10k resistor rises once above and falls once below a certain threshold, which is defined by the variable resistor.
 
@@ -24,9 +24,7 @@ RPM = 60 * F_CPU / prescaler / counter
     = 60 * 1200000 / 64 / counter
     = 1125000 / counter
 ```
-The calculated RPM value is displayed on an I²C OLED display. The I²C protocol implementation is based on a crude bitbanging method. It was specifically designed for the limited resources of ATtiny10 and ATtiny13, but should work with some other AVRs as well. The functions for the OLED are adapted to the SSD1306 128x32 OLED module, but they can easily be modified to be used for other modules. In order to save resources, only the basic functionalities which are needed for this application are implemented.
-
-For a detailed information on the working principle of the I²C OLED implementation visit https://github.com/wagiminator/attiny13-tinyoleddemo
+The calculated RPM value is displayed on an I²C OLED display. The I²C protocol implementation is based on a crude bitbanging method. It was specifically designed for the limited resources of ATtiny10 and ATtiny13, but should work with some other AVRs as well. The functions for the OLED are adapted to the SSD1306 128x32 OLED module, but they can easily be modified to be used for other modules. In order to save resources, only the basic functionalities which are needed for this application are implemented. For a detailed information on the working principle of the I²C OLED implementation visit [TinyOLEDdemo](https://github.com/wagiminator/attiny13-tinyoleddemo).
 
 ```c
 // global variables
@@ -78,7 +76,7 @@ ISR(TIM0_OVF_vect) {
 # Compiling and Uploading
 Since there is no ICSP header on the board, you have to program the ATtiny either before soldering using an [SOP adapter](https://aliexpress.com/wholesale?SearchText=sop-8+150mil+adapter), or after soldering using an [EEPROM clip](https://aliexpress.com/wholesale?SearchText=sop8+eeprom+programming+clip). The [AVR Programmer Adapter](https://github.com/wagiminator/AVR-Programmer/tree/master/AVR_Programmer_Adapter) can help with this.
 
-If using the Arduino IDE:
+## If Using the Arduino IDE
 - Make sure you have installed [MicroCore](https://github.com/MCUdude/MicroCore).
 - Go to **Tools -> Board -> MicroCore** and select **ATtiny13**.
 - Go to **Tools** and choose the following board options:
@@ -90,7 +88,7 @@ If using the Arduino IDE:
 - Go to **Tools -> Burn Bootloader** to burn the fuses.
 - Open TinyTacho.ino and click **Upload**.
 
-If using the precompiled hex-file (this may be a little different with Windows):
+## If Using the Precompiled hex-File
 - Make sure you have installed [avrdude](https://learn.adafruit.com/usbtinyisp/avrdude).
 - Connect your programmer to your PC and to the ATtiny.
 - Open a terminal.
@@ -100,7 +98,7 @@ If using the precompiled hex-file (this may be a little different with Windows):
   avrdude -c usbasp -p t13 -U lfuse:w:0x2a:m -U hfuse:w:0xfb:m -U flash:w:TinyTacho.hex
   ```
 
-If using the makefile (Linux/Mac):
+## If Using the makefile (Linux/Mac)
 - Make sure you have installed [avr-gcc toolchain and avrdude](http://maxembedded.com/2015/06/setting-up-avr-gcc-toolchain-on-linux-and-mac-os-x/).
 - Connect your programmer to your PC and to the ATtiny.
 - Open the makefile and change the programmer if you are not using usbasp.
@@ -122,7 +120,7 @@ To increase the measuring range, on the one hand the clock frequency of the time
 ### Measuring Resolution
 The measuring resolution depends on the resolution of the timer/counter, which is in fact its clock frequency. Due to the calculation formula, the RPM value is not proportional to the value of the counter, it is rather hyperbolic. This also means that the measurement resolution is not constant over the entire measurement range. With the set clock frequency of the timer/counter of 18.75 kHz, the following resolution results depending on the measured RPM:
 
-![resolution.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_resolution.png)
+![resolution.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_resolution.png)
 
 The resolution in the diagram shown means the **minimum distance between two measured values** (the higher the value, the worse the resolution). To improve the resolution, the clock frequency of the timer/counter must be increased (see above). In order not to reduce the measuring range as a result, the counter and result variables must be extended to 32 bits.
 
@@ -136,16 +134,16 @@ A simple plausibility check can be carried out with the video method at lower sp
 ### Oscilloscope
 The voltage behavior at the cathode of the photodiode can be measured with an oscilloscope. First of all, it can be assessed here whether there is a uniform, clean and glitch-free wave, and thus whether a reasonable detection of the white stripe passing by is possible at all. The frequency of the wave measured on the oscilloscope then automatically indicates the number of revolutions per second. If you multiply this value by 60 you get the RPM and can compare this with the value displayed on the OLED. In all measurements, this value was within the theoretically predicted accuracy (the oscillator of the ATtiny was not manually calibrated).
 
-![scope1.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_scope1.png)
-![scope2.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_scope2.png)
-![scope3.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_scope3.png)
-![scope4.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_scope4.png)
-![setup.png](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_setup.png)
+![scope1.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_scope1.png)
+![scope2.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_scope2.png)
+![scope3.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_scope3.png)
+![scope4.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_scope4.png)
+![setup.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_setup.png)
 
 ### Comparison with Commercial Device
 The comparison with the measured values of the cheap commercial tachometer [DT-2234C+](https://aliexpress.com/wholesale?SearchText=dt-2234C) showed the same results as with the oscilloscope.
 
-![commercial.jpg](https://github.com/wagiminator/ATtiny13-TinyTacho/blob/main/documentation/TinyTacho_commercial.jpg)
+![commercial.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_commercial.jpg)
 
 ## Bottom Line
 Even if TinyTacho was intended more as an educational and fun project, it delivers plausible readings, especially with a calibrated oscillator. In contrast to the commercial products, it is much smaller and significantly cheaper. If you can do without very accurate measured values with high resolution, then the TinyTacho is a useful measuring instrument.
