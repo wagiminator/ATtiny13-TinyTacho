@@ -60,55 +60,19 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
-// I2C definitions
+// pin definitions
 #define I2C_SCL         PB3                   // serial clock pin
 #define I2C_SDA         PB4                   // serial data pin
+
+// -----------------------------------------------------------------------------
+// I2C Implementation
+// -----------------------------------------------------------------------------
+
+// I2C macros
 #define I2C_SDA_HIGH()  DDRB &= ~(1<<I2C_SDA) // release SDA   -> pulled HIGH by resistor
 #define I2C_SDA_LOW()   DDRB |=  (1<<I2C_SDA) // SDA as output -> pulled LOW  by MCU
 #define I2C_SCL_HIGH()  DDRB &= ~(1<<I2C_SCL) // release SCL   -> pulled HIGH by resistor
 #define I2C_SCL_LOW()   DDRB |=  (1<<I2C_SCL) // SCL as output -> pulled LOW  by MCU
-
-// OLED definitions
-#define OLED_ADDR       0x78                  // OLED write address
-#define OLED_CMD_MODE   0x00                  // set command mode
-#define OLED_DAT_MODE   0x40                  // set data mode
-#define OLED_INIT_LEN   15                    // length of OLED init command array
-
-// OLED init settings
-const uint8_t OLED_INIT_CMD[] PROGMEM = {
-  0xA8, 0x1F,       // set multiplex for 128x32
-  0x22, 0x00, 0x03, // set min and max page
-  0x20, 0x01,       // set vertical memory addressing mode
-  0xDA, 0x02,       // set COM pins hardware configuration to sequential
-  0x8D, 0x14,       // enable charge pump
-  0xAF,             // switch on OLED
-  0x00, 0x10, 0xB0  // set cursor at home position
-};
-
-// simple reduced 3x8 font
-const uint8_t OLED_FONT[] PROGMEM = {
-  0x7F, 0x41, 0x7F, // 0  0
-  0x00, 0x00, 0x7F, // 1  1
-  0x79, 0x49, 0x4F, // 2  2
-  0x41, 0x49, 0x7F, // 3  3
-  0x0F, 0x08, 0x7E, // 4  4
-  0x4F, 0x49, 0x79, // 5  5
-  0x7F, 0x49, 0x79, // 6  6
-  0x03, 0x01, 0x7F, // 7  7
-  0x7F, 0x49, 0x7F, // 8  8
-  0x4F, 0x49, 0x7F, // 9  9
-  0x7F, 0x40, 0x60, // L 10
-  0x7F, 0x20, 0x7F, // W 11
-  0x00, 0x00, 0x00  //   12
-};
-
-// global variables
-volatile uint8_t  counter_enable    = 1;          // enable update of counter result
-volatile uint8_t  counter_highbyte  = 0;          // high byte of 16-bit counter
-volatile uint16_t counter_result    = 0;          // counter result (timer counts per revolution)
-uint8_t buffer[8] = {12, 0, 0, 0, 0, 0, 12, 12};  // screen buffer
-uint8_t slow[8] = {12, 12, 5, 10, 0, 11, 12, 12}; // "SLOW"
-uint16_t divider[5] = {10000, 1000, 100, 10, 1};  // for BCD conversion
 
 // I2C init function
 void I2C_init(void) {
@@ -142,6 +106,49 @@ void I2C_stop(void) {
   I2C_SCL_HIGH();                         // stop condition: SCL goes HIGH first
   I2C_SDA_HIGH();                         // stop condition: SDA goes HIGH second
 }
+
+// -----------------------------------------------------------------------------
+// OLED Implementation
+// -----------------------------------------------------------------------------
+
+// OLED definitions
+#define OLED_ADDR       0x78              // OLED write address
+#define OLED_CMD_MODE   0x00              // set command mode
+#define OLED_DAT_MODE   0x40              // set data mode
+#define OLED_INIT_LEN   15                // length of OLED init command array
+
+// OLED init settings
+const uint8_t OLED_INIT_CMD[] PROGMEM = {
+  0xA8, 0x1F,       // set multiplex for 128x32
+  0x22, 0x00, 0x03, // set min and max page
+  0x20, 0x01,       // set vertical memory addressing mode
+  0xDA, 0x02,       // set COM pins hardware configuration to sequential
+  0x8D, 0x14,       // enable charge pump
+  0xAF,             // switch on OLED
+  0x00, 0x10, 0xB0  // set cursor at home position
+};
+
+// simple reduced 3x8 font
+const uint8_t OLED_FONT[] PROGMEM = {
+  0x7F, 0x41, 0x7F, // 0  0
+  0x00, 0x00, 0x7F, // 1  1
+  0x79, 0x49, 0x4F, // 2  2
+  0x41, 0x49, 0x7F, // 3  3
+  0x0F, 0x08, 0x7E, // 4  4
+  0x4F, 0x49, 0x79, // 5  5
+  0x7F, 0x49, 0x79, // 6  6
+  0x03, 0x01, 0x7F, // 7  7
+  0x7F, 0x49, 0x7F, // 8  8
+  0x4F, 0x49, 0x7F, // 9  9
+  0x7F, 0x40, 0x60, // L 10
+  0x7F, 0x20, 0x7F, // W 11
+  0x00, 0x00, 0x00  //   12
+};
+
+// global variables
+uint8_t  buffer[8] =  {12, 0, 0, 0, 0, 0, 12, 12};    // screen buffer
+uint8_t  slow[8] =    {12, 12, 5, 10, 0, 11, 12, 12}; // "SLOW"
+uint16_t divider[5] = {10000, 1000, 100, 10, 1};      // for BCD conversion
 
 // OLED init function
 void OLED_init(void) {
@@ -186,7 +193,7 @@ void OLED_printB(uint8_t *buffer) {
 
 // OLED print 16 bit value (BCD conversion by substraction method)
 void OLED_printW(uint16_t value) {
-  for(uint8_t digit = 0; digit < 5; digit++) {  // 5 digits
+  for(uint8_t digit = 0; digit < 5; digit++) {      // 5 digits
     uint8_t digitval = 0;                 // start with digit value 0
     while (value >= divider[digit]) {     // if current divider fits into the value
       digitval++;                         // increase digit value
@@ -197,10 +204,22 @@ void OLED_printW(uint16_t value) {
   OLED_printB(buffer);                    // print screen buffer on the OLED
 }
 
+// -----------------------------------------------------------------------------
+// Main Function
+// -----------------------------------------------------------------------------
+
+// global variables
+volatile uint8_t  counter_enable    = 1;  // enable update of counter result
+volatile uint8_t  counter_highbyte  = 0;  // high byte of 16-bit counter
+volatile uint16_t counter_result    = 0;  // counter result (timer counts per revolution)
+
 // main function
 int main(void) {
+  // local variables
   uint16_t counter_value;                 // timer counts per revolution
   uint16_t rpm;                           // revolutions per minute
+
+  // setup
   PRR    = (1<<PRADC);                    // shut down ADC to save power
   DIDR0  = (1<<AIN1D) | (1<<AIN0D);       // disable digital input buffer on AC pins
   ACSR   = (1<<ACIE) | (1<<ACIS1);        // enable analog comparator interrupt on falling edge
@@ -208,7 +227,7 @@ int main(void) {
   sei();                                  // enable all interrupts
   OLED_init();                            // initialize the OLED
   
-  // main loop
+  // loop
   while(1) {                              // loop until forever                         
     counter_enable = 0;                   // lock counter result
     counter_value = counter_result;       // get counter result
