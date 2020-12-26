@@ -58,8 +58,8 @@
 #include <avr/pgmspace.h>
 
 // pin definitions
-#define I2C_SCL         PB3                   // serial clock pin
-#define I2C_SDA         PB4                   // serial data pin
+#define I2C_SCL         PB3                   // I2C serial clock pin
+#define I2C_SDA         PB4                   // I2C serial data pin
 
 // -----------------------------------------------------------------------------
 // I2C Implementation
@@ -125,7 +125,7 @@ const uint8_t OLED_INIT_CMD[] PROGMEM = {
   0x00, 0x10, 0xB0  // set cursor at home position
 };
 
-// simple reduced 3x8 font
+// OLED simple reduced 3x8 font
 const uint8_t OLED_FONT[] PROGMEM = {
   0x7F, 0x41, 0x7F, // 0  0
   0x00, 0x00, 0x7F, // 1  1
@@ -142,7 +142,7 @@ const uint8_t OLED_FONT[] PROGMEM = {
   0x00, 0x00, 0x00  //   12
 };
 
-// global variables
+// OLED global variables
 uint8_t  buffer[8] =  {12, 0, 0, 0, 0, 0, 12, 12};    // screen buffer
 uint8_t  slow[8] =    {12, 12, 5, 10, 0, 11, 12, 12}; // "SLOW"
 uint16_t divider[5] = {10000, 1000, 100, 10, 1};      // for BCD conversion
