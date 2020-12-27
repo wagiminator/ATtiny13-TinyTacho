@@ -52,6 +52,9 @@
 // License: http://creativecommons.org/licenses/by-sa/3.0/
 
 
+// oscillator calibration value (uncomment and set if necessary)
+//#define OSCCAL_VAL  66
+
 // libraries
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -212,6 +215,11 @@ volatile uint16_t counter_result    = 0;  // counter result (timer counts per re
 
 // main function
 int main(void) {
+  // set oscillator calibration value
+  #ifdef OSCCAL_VAL
+    OSCCAL = OSCCAL_VAL;                // set the value if defined above
+  #endif
+
   // local variables
   uint16_t counter_value;                 // timer counts per revolution
   uint16_t rpm;                           // revolutions per minute
