@@ -56,7 +56,7 @@
 
 
 // oscillator calibration value (uncomment and set if necessary)
-//#define OSCCAL_VAL  66
+//#define OSCCAL_VAL  0x66
 
 // libraries
 #include <avr/io.h>
