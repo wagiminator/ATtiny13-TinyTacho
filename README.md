@@ -3,7 +3,7 @@
 Recently Great Scott built his [DIY version of a tachometer](https://youtu.be/6QZMt4yyylU) which I thought was very cool. But using an ATmega for this job, I found a bit overpowered. So I tried to force all tasks (measurement, calculation, I²C protocol and OLED display) into the huge 1KByte memory of an ATtiny13A.
 
 - Project Video (YouTube): https://youtu.be/Iz7LjheLYKo
-- Project Files (EasyEDA): https://easyeda.com/wagiminator/attiny13-tinytacho
+- Design Files (EasyEDA): https://easyeda.com/wagiminator/attiny13-tinytacho
 
 ![pic1.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyTacho/main/documentation/TinyTacho_pic1.jpg)
 
@@ -156,3 +156,9 @@ Even if TinyTacho was intended more as an educational and fun project, it delive
 3. [SSD1306 Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
 4. [ATtiny13A Datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/doc8126.pdf)
 5. [Calibrating ATtiny's Internal Oscillator](https://github.com/wagiminator/ATtiny84-TinyCalibrator)
+
+# License
+![license.png](https://i.creativecommons.org/l/by-sa/3.0/88x31.png)
+
+This work is licensed under Creative Commons Attribution-ShareAlike 3.0 Unported License. 
+(http://creativecommons.org/licenses/by-sa/3.0/)
