@@ -1,5 +1,15 @@
-// tinyTacho - RPM-Meter using ATtiny13A and I²C OLED
+// ===================================================================================
+// Project:   TinyTacho - RPM-Meter using ATtiny13A and I²C OLED
+// Version:   v1.0
+// Year:      2020
+// Author:    Stefan Wagner
+// Github:    https://github.com/wagiminator
+// EasyEDA:   https://easyeda.com/wagiminator
+// License:   http://creativecommons.org/licenses/by-sa/3.0/
+// ===================================================================================
 //
+// Description:
+// ------------
 // This code implements a simple tachometer (RPM counter). An IR photo
 // diode is connected to the positive input of ATtiny's internal
 // analog comparator, a variable resistor for calibration is connected to
@@ -25,7 +35,13 @@
 // For a detailed information on the working principle of the I²C OLED
 // implementation visit https://github.com/wagiminator/attiny13-tinyoleddemo
 //
+// References:
+// -----------
+// This project was inspired by Great Scott's DIY tachometer:
+// https://www.instructables.com/DIY-Tachometer-RPM-Meter/
 //
+// Wiring:
+// -------
 //    +-----------------------------+
 // ---|SDA +--------------------+   |
 // ---|SCL |    SSD1306 OLED    |   |
@@ -33,43 +49,47 @@
 // ---|GND +--------------------+   |
 //    +-----------------------------+
 //
-//                            +-\/-+
-//          --- A0 (D5) PB5  1|°   |8  Vcc
-// SCL OLED --- A3 (D3) PB3  2|    |7  PB2 (D2) A1 ---
-// SDA OLED --- A2 (D4) PB4  3|    |6  PB1 (D1) AC1 -- Calib Poti
-//                      GND  4|    |5  PB0 (D0) AC0 -- IR Photo Diode
-//                            +----+  
+//                             +-\/-+
+//          --- RST ADC0 PB5  1|°   |8  Vcc
+// SCL OLED ------- ADC3 PB3  2|    |7  PB2 ADC1 -------- 
+// SDA OLED ------- ADC2 PB4  3|    |6  PB1 AIN1 OC0B --- Calib Poti
+//                       GND  4|    |5  PB0 AIN0 OC0A --- IR Photo Diode
+//                             +----+
 //
-// Controller: ATtiny13
+// Compilation Settings:
+// ---------------------
+// Controller: ATtiny13A
 // Core:       MicroCore (https://github.com/MCUdude/MicroCore)
 // Clockspeed: 1.2 MHz internal
-// BOD:        BOD 2.7V
-// Timing:     Micros disabled (Timer0 is in use)
+// BOD:        BOD disabled
+// Timing:     Micros disabled
 //
-// This project was inspired by Great Scott's DIY tachometer:
-// https://www.instructables.com/DIY-Tachometer-RPM-Meter/
+// Leave the rest on default settings. Don't forget to "Burn bootloader"!
+// No Arduino core functions or libraries are used. Use the makefile if 
+// you want to compile without Arduino IDE.
 //
-// 2020 by Stefan Wagner 
-// Project Files (EasyEDA): https://easyeda.com/wagiminator
-// Project Files (Github):  https://github.com/wagiminator
-// License: http://creativecommons.org/licenses/by-sa/3.0/
+// Fuse settings: -U lfuse:w:0x2a:m -U hfuse:w:0xff:m
 
 
-// oscillator calibration value (uncomment and set if necessary)
+// ===================================================================================
+// Libraries and Definitions
+// ===================================================================================
+
+// Oscillator calibration value (uncomment and set if necessary)
 //#define OSCCAL_VAL  0x66
 
-// libraries
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
+// Libraries
+#include <avr/io.h>           // for GPIO
+#include <avr/interrupt.h>    // for interrupts
+#include <avr/pgmspace.h>     // to store data in programm memory
 
-// pin definitions
-#define I2C_SCL         PB3                   // I2C serial clock pin
-#define I2C_SDA         PB4                   // I2C serial data pin
+// Pin definitions
+#define I2C_SCL   PB3         // I2C serial clock pin
+#define I2C_SDA   PB4         // I2C serial data pin
 
-// -----------------------------------------------------------------------------
+// ===================================================================================
 // I2C Implementation
-// -----------------------------------------------------------------------------
+// ===================================================================================
 
 // I2C macros
 #define I2C_SDA_HIGH()  DDRB &= ~(1<<I2C_SDA) // release SDA   -> pulled HIGH by resistor
@@ -87,7 +107,7 @@ void I2C_init(void) {
 void I2C_write(uint8_t data) {
   for(uint8_t i = 8; i; i--, data<<=1) {  // transmit 8 bits, MSB first
     I2C_SDA_LOW();                        // SDA LOW for now (saves some flash this way)
-    if (data & 0x80) I2C_SDA_HIGH();      // SDA HIGH if bit is 1
+    if(data & 0x80) I2C_SDA_HIGH();       // SDA HIGH if bit is 1
     I2C_SCL_HIGH();                       // clock HIGH -> slave reads the bit
     I2C_SCL_LOW();                        // clock LOW again
   }
@@ -110,42 +130,42 @@ void I2C_stop(void) {
   I2C_SDA_HIGH();                         // stop condition: SDA goes HIGH second
 }
 
-// -----------------------------------------------------------------------------
+// ===================================================================================
 // OLED Implementation
-// -----------------------------------------------------------------------------
+// ===================================================================================
 
 // OLED definitions
-#define OLED_ADDR       0x78              // OLED write address
-#define OLED_CMD_MODE   0x00              // set command mode
-#define OLED_DAT_MODE   0x40              // set data mode
-#define OLED_INIT_LEN   15                // length of OLED init command array
+#define OLED_ADDR       0x78    // OLED write address
+#define OLED_CMD_MODE   0x00    // set command mode
+#define OLED_DAT_MODE   0x40    // set data mode
+#define OLED_INIT_LEN   15      // length of OLED init command array
 
 // OLED init settings
 const uint8_t OLED_INIT_CMD[] PROGMEM = {
-  0xA8, 0x1F,       // set multiplex for 128x32
-  0x22, 0x00, 0x03, // set min and max page
-  0x20, 0x01,       // set vertical memory addressing mode
-  0xDA, 0x02,       // set COM pins hardware configuration to sequential
-  0x8D, 0x14,       // enable charge pump
-  0xAF,             // switch on OLED
-  0x00, 0x10, 0xB0  // set cursor at home position
+  0xA8, 0x1F,                   // set multiplex for 128x32
+  0x22, 0x00, 0x03,             // set min and max page
+  0x20, 0x01,                   // set vertical memory addressing mode
+  0xDA, 0x02,                   // set COM pins hardware configuration to sequential
+  0x8D, 0x14,                   // enable charge pump
+  0xAF,                         // switch on OLED
+  0x00, 0x10, 0xB0              // set cursor at home position
 };
 
 // OLED simple reduced 3x8 font
 const uint8_t OLED_FONT[] PROGMEM = {
-  0x7F, 0x41, 0x7F, // 0  0
-  0x00, 0x00, 0x7F, // 1  1
-  0x79, 0x49, 0x4F, // 2  2
-  0x41, 0x49, 0x7F, // 3  3
-  0x0F, 0x08, 0x7E, // 4  4
-  0x4F, 0x49, 0x79, // 5  5
-  0x7F, 0x49, 0x79, // 6  6
-  0x03, 0x01, 0x7F, // 7  7
-  0x7F, 0x49, 0x7F, // 8  8
-  0x4F, 0x49, 0x7F, // 9  9
-  0x7F, 0x40, 0x60, // L 10
-  0x7F, 0x20, 0x7F, // W 11
-  0x00, 0x00, 0x00  //   12
+  0x7F, 0x41, 0x7F,             // 0  0
+  0x00, 0x00, 0x7F,             // 1  1
+  0x79, 0x49, 0x4F,             // 2  2
+  0x41, 0x49, 0x7F,             // 3  3
+  0x0F, 0x08, 0x7E,             // 4  4
+  0x4F, 0x49, 0x79,             // 5  5
+  0x7F, 0x49, 0x79,             // 6  6
+  0x03, 0x01, 0x7F,             // 7  7
+  0x7F, 0x49, 0x7F,             // 8  8
+  0x4F, 0x49, 0x7F,             // 9  9
+  0x7F, 0x40, 0x60,             // L 10
+  0x7F, 0x20, 0x7F,             // W 11
+  0x00, 0x00, 0x00              //   12
 };
 
 // OLED global variables
@@ -158,7 +178,7 @@ void OLED_init(void) {
   I2C_init();                             // initialize I2C first
   I2C_start(OLED_ADDR);                   // start transmission to OLED
   I2C_write(OLED_CMD_MODE);               // set command mode
-  for (uint8_t i = 0; i < OLED_INIT_LEN; i++) I2C_write(pgm_read_byte(&OLED_INIT_CMD[i])); // send the command bytes
+  for(uint8_t i = 0; i < OLED_INIT_LEN; i++) I2C_write(pgm_read_byte(&OLED_INIT_CMD[i])); // send the command bytes
   I2C_stop();                             // stop transmission
 }
 
@@ -196,9 +216,9 @@ void OLED_printB(uint8_t *buffer) {
 
 // OLED print 16 bit value (BCD conversion by substraction method)
 void OLED_printW(uint16_t value) {
-  for(uint8_t digit = 0; digit < 5; digit++) {      // 5 digits
+  for(uint8_t digit = 0; digit < 5; digit++) {  // 5 digits
     uint8_t digitval = 0;                 // start with digit value 0
-    while (value >= divider[digit]) {     // if current divider fits into the value
+    while(value >= divider[digit]) {      // if current divider fits into the value
       digitval++;                         // increase digit value
       value -= divider[digit];            // decrease value by divider
     }
@@ -207,27 +227,27 @@ void OLED_printW(uint16_t value) {
   OLED_printB(buffer);                    // print screen buffer on the OLED
 }
 
-// -----------------------------------------------------------------------------
+// ===================================================================================
 // Main Function
-// -----------------------------------------------------------------------------
+// ===================================================================================
 
-// global variables
+// Global variables
 volatile uint8_t  counter_enable    = 1;  // enable update of counter result
 volatile uint8_t  counter_highbyte  = 0;  // high byte of 16-bit counter
 volatile uint16_t counter_result    = 0;  // counter result (timer counts per revolution)
 
-// main function
+// Main function
 int main(void) {
-  // set oscillator calibration value
+  // Set oscillator calibration value
   #ifdef OSCCAL_VAL
-    OSCCAL = OSCCAL_VAL;                // set the value if defined above
+    OSCCAL = OSCCAL_VAL;                  // set the value if defined above
   #endif
 
-  // local variables
+  // Local variables
   uint16_t counter_value;                 // timer counts per revolution
   uint16_t rpm;                           // revolutions per minute
 
-  // setup
+  // Setup
   PRR    = (1<<PRADC);                    // shut down ADC to save power
   DIDR0  = (1<<AIN1D) | (1<<AIN0D);       // disable digital input buffer on AC pins
   ACSR   = (1<<ACIE) | (1<<ACIS1);        // enable analog comparator interrupt on falling edge
@@ -235,19 +255,19 @@ int main(void) {
   sei();                                  // enable all interrupts
   OLED_init();                            // initialize the OLED
   
-  // loop
+  // Loop
   while(1) {                              // loop until forever                         
     counter_enable = 0;                   // lock counter result
     counter_value = counter_result;       // get counter result
     counter_enable = 1;                   // unlock counter result
-    if (counter_value > 17) {             // if counter value is valid:
+    if(counter_value > 17) {              // if counter value is valid:
       rpm = (uint32_t)1125000 / counter_value; // calculate RPM value      
       OLED_printW(rpm);                   // print RPM value on the OLED
     } else OLED_printB(slow);             // else print "SLOW" on the OLED
   }
 }
 
-// analog comparator interrupt service routine
+// Analog comparator interrupt service routine
 ISR(ANA_COMP_vect) {
   if(counter_enable) counter_result = (uint16_t)(counter_highbyte << 8) | TCNT0; // save result if enabled
   TCNT0 = 0;                              // reset counter
@@ -255,7 +275,7 @@ ISR(ANA_COMP_vect) {
   TCCR0B  = (1<<CS01) | (1<<CS00);        // start timer with prescaler 64 (in case it was stopped)
 }
 
-// timer overflow interrupt service routine
+// Timer overflow interrupt service routine
 ISR(TIM0_OVF_vect) {
   counter_highbyte++;                     // increase highbyte (virtual 16-bit counter)
   if(!counter_highbyte) {                 // if 16-bit counter overflows

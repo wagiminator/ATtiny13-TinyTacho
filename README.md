@@ -46,12 +46,12 @@ int main(void) {
   OLED_init();                            // initialize the OLED
   
   // main loop
-  while(1) {                              // loop until forever                         
+  while(1) {                              // loop until forever
     counter_enable = 0;                   // lock counter result
     counter_value = counter_result;       // get counter result
     counter_enable = 1;                   // unlock counter result
     if (counter_value > 17) {             // if counter value is valid:
-      rpm = (uint32_t)1125000 / counter_value; // calculate RPM value      
+      rpm = (uint32_t)1125000 / counter_value; // calculate RPM value
       OLED_printW(rpm);                   // print RPM value on the OLED
     } else OLED_printB(slow);             // else print "SLOW" on the OLED
   }
@@ -83,7 +83,7 @@ Since there is no ICSP header on the board, you have to program the ATtiny eithe
 - Go to **Tools -> Board -> MicroCore** and select **ATtiny13**.
 - Go to **Tools** and choose the following board options:
   - **Clock:**  1.2 MHz internal osc.
-  - **BOD:**    BOD 2.7V
+  - **BOD:**    BOD disabled
   - **Timing:** Micros disabled
 - Connect your programmer to your PC and to the ATtiny.
 - Go to **Tools -> Programmer** and select your ISP programmer (e.g. [USBasp](https://aliexpress.com/wholesale?SearchText=usbasp)).
@@ -97,7 +97,7 @@ Since there is no ICSP header on the board, you have to program the ATtiny eithe
 - Navigate to the folder with the hex-file.
 - Execute the following command (if necessary replace "usbasp" with the programmer you use):
   ```
-  avrdude -c usbasp -p t13 -U lfuse:w:0x2a:m -U hfuse:w:0xfb:m -U flash:w:TinyTacho.hex
+  avrdude -c usbasp -p t13 -U lfuse:w:0x2a:m -U hfuse:w:0xff:m -U flash:w:tinytacho.hex
   ```
 
 ### If using the makefile (Linux/Mac)
@@ -105,7 +105,7 @@ Since there is no ICSP header on the board, you have to program the ATtiny eithe
 - Connect your programmer to your PC and to the ATtiny.
 - Open the makefile and change the programmer if you are not using usbasp.
 - Open a terminal.
-- Navigate to the folder with the makefile and main.c.
+- Navigate to the folder with the makefile and sketch.
 - Run "make install" to compile, burn the fuses and upload the firmware.
 
 # Performance
