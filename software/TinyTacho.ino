@@ -68,6 +68,9 @@
 // No Arduino core functions or libraries are used. Use the makefile if 
 // you want to compile without Arduino IDE.
 //
+// Note: The internal oscillator may need to be calibrated for the device
+//       to function properly.
+//
 // Fuse settings: -U lfuse:w:0x2a:m -U hfuse:w:0xff:m
 
 
